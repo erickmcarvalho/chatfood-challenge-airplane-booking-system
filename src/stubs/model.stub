@@ -1,0 +1,10 @@
+<?php
+
+namespace {{ namespace }};
+
+use Kernel\Database\Models;
+
+class {{ class }} extends Model
+{
+
+}
