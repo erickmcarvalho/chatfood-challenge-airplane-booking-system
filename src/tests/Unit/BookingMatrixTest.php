@@ -106,7 +106,7 @@ class BookingMatrixTest extends TestCase
                 $pending = $booking;
                 $reserves = [];
 
-                for ($y = 0; $y < $rows && $pending > 0; $y++) {
+                for ($y = $start; $y < $rows && $pending > 0; $y++) {
                     for ($ix = 0; $ix < $columns * 2 && $pending > 0; $ix++) {
                         $side = intval($ix / static::SEAT_COLUMNS);
                         $x = intval($ix % static::SEAT_COLUMNS);
