@@ -54,59 +54,6 @@ class BookingMatrixTest extends TestCase
         $columns = 0; $rows = 0;
         $this->makeBookingMatrix($booking, $columns, $rows);
 
-        /*$side = 0;
-        $pending = $booking;
-        $reserves = [];
-
-        for ($i = 0; $i < static::SITS_NUMBER; $i++) {
-            for ($y = 0; $y < $rows && $pending > 0; $y++) {
-                for ($x = 0; $x < $columns && $pending > 0; $x++) {
-                    if ($sits[0][$y][$x]['isFree'] === true) {
-                        $reserves[] = [
-                            'seat' => $sits[0][$y][$x]['name'],
-                            'side' => 0,
-                            'row' => $y,
-                            'column' => $x
-                        ];
-
-                        --$pending;
-                    } elseif ($sits[1][$y][2 - $x]['isFree'] === true) {
-                        $reserves[] = [
-                            'seat' => $sits[1][$y][2 - $x]['name'],
-                            'side' => 1,
-                            'row' => $y,
-                            'column' => 2 - $x
-                        ];
-
-                        --$pending;
-                    }
-                }
-            }
-        }
-
-        if ($pending > 0) {
-            $pending = $booking;
-            $reserves = [];
-
-            for ($y = 0; $y < $rows && $pending > 0; $y++) {
-                for ($ix = 0; $ix < $columns * 2 && $pending > 0; $ix++) {
-                    $side = intval($ix / static::SEAT_COLUMNS);
-                    $x = intval($ix % static::SEAT_COLUMNS);
-
-                    if ($sits[$side][$y][$x]['isFree'] === true) {
-                        $reserves[] = [
-                            'seat' => $sits[$side][$y][$x]['name'],
-                            'side' => $side,
-                            'row' => $y,
-                            'column' => $x
-                        ];
-
-                        --$pending;
-                    }
-                }
-            }
-        }*/
-
         $pending = $booking;
 
         for ($i = 0; $i < static::SEAT_ROWS && $pending > 0; $i += static::SEAT_COLUMNS) {
