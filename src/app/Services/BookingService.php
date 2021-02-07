@@ -388,6 +388,44 @@ class BookingService
     }
 
     /**
+     * Gets the info of a specific booking.
+     *
+     * @param string $flightBookingId
+     * @return array|null
+     */
+    public function getBookingInfo(string $flightBookingId): ?array
+    {
+        $flightBooking = $this->flightBookingRepository->find($flightBookingId);
+
+        if ($flightBooking === null) {
+            return null;
+        }
+
+        $flightBookingSeats = $flightBooking->seats;
+        $airplaneSits = $this->airplaneSitRepository->getFromAirplane($flightBooking->flight->airplane_id);
+        $bookingSits = collect([]);
+
+        foreach ($flightBookingSeats as $flightBookingSeat) {
+            $airplaneSit = $airplaneSits->firstWhere('id', $flightBookingSeat->airplane_sit_id);
+
+            $bookingSits->push([
+                'seat' => $airplaneSit,
+                'side' => $airplaneSit->seat_side,
+                'row' => $airplaneSit->row,
+                'column' => $airplaneSit->column
+            ]);
+        }
+
+        return [
+            'id' => $flightBookingId,
+            'passenger' => $flightBooking->passenger,
+            'flight' => $flightBooking->flight,
+            'booking' => $flightBookingSeats->count(),
+            'seats' => $bookingSits
+        ];
+    }
+
+    /**
      * Makes the matrix by booking number.
      *
      * @param int $booking

@@ -78,34 +78,26 @@ class BookingController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $fightBookingId
+     * @return \Illuminate\Http\Response|mixed
      */
-    public function show($id)
+    public function show(string $fightBookingId)
     {
-        //
-    }
+        $bookingInfo = $this->bookingService->getBookingInfo($fightBookingId);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        if ($bookingInfo === null) {
+            return $this->notFound([
+                'code' => "bookingNotFound",
+                'message' => "The booking is not found."
+            ]);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return new BookingResource([
+            'id' => $bookingInfo['id'],
+            'passenger' => $bookingInfo['passenger']->name,
+            'flight' => $bookingInfo['flight'],
+            'booking' => $bookingInfo['booking'],
+            'seats' => $bookingInfo['seats']
+        ]);
     }
 }

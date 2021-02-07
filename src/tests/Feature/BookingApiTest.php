@@ -108,6 +108,26 @@ class BookingApiTest extends TestCase
         ]))->response()->getData(true);
     }
 
+    public function test_get_booking_info()
+    {
+        // Mock
+        $data = [
+            'flightId' => $this->flight->id,
+            'name' => $this->faker->name,
+            'email' => $this->faker->email,
+            'booking' => mt_rand(1, 7)
+        ];
+
+        // Create
+        $response = $this->postJson(route("bookings.store"), $data);
+        $response->assertCreated();
+        $responseData = json_decode($response->content(), true);
+
+        // Test
+        $response = $this->getJson(route("bookings.show", [$responseData['data']['id']]));
+        $response->assertExactJson($responseData);
+    }
+
     /**
      * Challenge example test 1
      *

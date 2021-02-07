@@ -27,7 +27,7 @@ class FlightBooking extends Model
      * @var array
      */
     protected $casts = [
-        'flight_id' => 'integer',
+        'flight_id' => 'string',
         'passenger_id' => 'integer',
         'booking' => 'integer'
     ];
@@ -43,4 +43,34 @@ class FlightBooking extends Model
         'passenger_id',
         'booking'
     ];
+
+    /**
+     * Relationship with the flight.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function flight()
+    {
+        return $this->belongsTo(Flight::class);
+    }
+
+    /**
+     * Relationship with the passenger.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function passenger()
+    {
+        return $this->belongsTo(Passenger::class);
+    }
+
+    /**
+     * Relationship with the flight booking seats.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function seats()
+    {
+        return $this->hasMany(FlightBookingSeat::class);
+    }
 }
