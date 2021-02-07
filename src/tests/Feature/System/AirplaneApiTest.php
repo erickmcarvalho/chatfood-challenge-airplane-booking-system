@@ -129,6 +129,21 @@ class AirplaneApiTest extends TestCase
         $this->assertNotEquals($backupCurrentAirplaneData['company'], $response['data']['company']);
     }
 
+    public function test_delete_specific_airplane()
+    {
+        // Mock
+        $airplane = Airplane::factory()->create();
+        $this->assertNotNull($airplane);
+
+        // Tests
+        $response = $this->deleteJson(route("system.airplanes.destroy", [$airplane->id]));
+        $response->assertNoContent();
+
+        $this->assertDatabaseMissing("airplanes", [
+            "id" => $airplane->id
+        ]);
+    }
+
     public function test_get_airplane_sits()
     {
         // Refresh

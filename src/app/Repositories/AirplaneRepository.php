@@ -80,4 +80,18 @@ class AirplaneRepository
 
         return $airplane;
     }
+
+    /**
+     * Delete an airplane from database.
+     *
+     * @param int $airplaneId
+     * @return bool
+     */
+    public function delete(int $airplaneId): bool
+    {
+        return $this->airplaneModel->newQuery()
+            ->where("id", $airplaneId)
+            ->select(DB::raw(1))
+            ->delete() > 0;
+    }
 }

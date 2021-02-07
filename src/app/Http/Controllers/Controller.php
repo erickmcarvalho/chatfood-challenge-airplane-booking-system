@@ -23,6 +23,16 @@ class Controller extends BaseController
     }
 
     /**
+     * Makes a no content response.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function noContent()
+    {
+        return response()->noContent();
+    }
+
+    /**
      * Makes a not found response.
      *
      * @param mixed $response

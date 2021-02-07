@@ -95,11 +95,18 @@ class AirplaneController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int  $airplaneId
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(int $airplaneId)
     {
-        //
+        if ($this->airplaneRepository->delete($airplaneId) === false) {
+            return $this->notFound([
+                "code" => "notFound",
+                "message" => "Airplane is not found."
+            ]);
+        }
+
+        return $this->noContent();
     }
 }
