@@ -46,4 +46,14 @@ class Flight extends Model
         'flight_date',
         'airplane_id'
     ];
+
+    /**
+     * Relationship with the airplanes.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function airplane()
+    {
+        return $this->belongsTo(Airplane::class);
+    }
 }

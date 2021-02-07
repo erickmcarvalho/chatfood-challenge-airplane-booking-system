@@ -22,7 +22,7 @@ class FlightBookingSeatRepository
      * Get all seat bookings from a flight.
      *
      * @param string $flightId
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|FlightBookingSeat[]
      */
     public function allFromFlight(string $flightId)
     {
