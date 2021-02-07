@@ -128,58 +128,72 @@ class BookingService
             throw new BookingServiceErrorException("The service is not loaded.", BookingServiceErrorException::IS_NOT_LOADED);
         }
 
-        $columns = 0; $rows = 0;
-        $this->makeBookingMatrix($booking, $columns, $rows);
-
         $pending = $booking;
 
-        for ($i = 0; $i < $this->airplane->seat_rows && $pending > 0; $i += $this->airplane->seat_columns) {
-            // Left side
-            $side = 0;
-            $pending = $booking;
-            $reserves = [];
+        if ($pending > 1) {
+            $columns = 0; $rows = 0;
+            $this->makeBookingMatrix($booking, $columns, $rows);
 
-            $start = $i / $this->airplane->seat_columns;
-
-            for ($y = $start; $y < $rows + $start && $pending > 0; $y++) {
-                for ($x = 0; $x < $columns && $pending > 0; $x++) {
-                    if ($this->matrix[$side][$y][$x]['isFree'] === true) {
-                        $reserves[] = &$this->matrix[$side][$y][$x];
-                        --$pending;
-                    }
-                }
-            }
-
-            // Right side
-            if ($pending > 0) {
-                $side = 1;
+            for ($i = 0; $i < $this->airplane->seat_rows && $pending > 0; $i += $this->airplane->seat_columns) {
+                // Left side
+                $side = 0;
                 $pending = $booking;
                 $reserves = [];
+
+                $start = $i / $this->airplane->seat_columns;
 
                 for ($y = $start; $y < $rows + $start && $pending > 0; $y++) {
                     for ($x = 0; $x < $columns && $pending > 0; $x++) {
-                        if ($this->matrix[$side][$y][2 - $x]['isFree'] === true) {
-                            $reserves[] = &$this->matrix[$side][$y][2 - $x];
+                        if ($this->matrix[$side][$y][$x]['isFree'] === true) {
+                            $reserves[] = &$this->matrix[$side][$y][$x];
                             --$pending;
                         }
                     }
                 }
-            }
 
-            // Both sides
-            if ($pending > 0) {
-                $pending = $booking;
-                $reserves = [];
+                // Right side
+                if ($pending > 0) {
+                    $side = 1;
+                    $pending = $booking;
+                    $reserves = [];
 
-                for ($y = $start; $y < $rows && $pending > 0; $y++) {
-                    for ($ix = 0; $ix < $columns * 2 && $pending > 0; $ix++) {
-                        $side = intval($ix / $this->airplane->seat_columns);
-                        $x = intval($ix % $this->airplane->seat_columns);
-
-                        if ($this->matrix[$side][$y][$x]['isFree'] === true) {
-                            $reserves[] = &$this->matrix[$side][$y][2 - $x];
-                            --$pending;
+                    for ($y = $start; $y < $rows + $start && $pending > 0; $y++) {
+                        for ($x = 0; $x < $columns && $pending > 0; $x++) {
+                            if ($this->matrix[$side][$y][2 - $x]['isFree'] === true) {
+                                $reserves[] = &$this->matrix[$side][$y][2 - $x];
+                                --$pending;
+                            }
                         }
+                    }
+                }
+
+                // Both sides
+                if ($pending > 0) {
+                    $pending = $booking;
+                    $reserves = [];
+
+                    for ($y = $start; $y < $rows && $pending > 0; $y++) {
+                        for ($ix = 0; $ix < $columns * 2 && $pending > 0; $ix++) {
+                            $side = intval($ix / $this->airplane->seat_columns);
+                            $x = intval($ix % $this->airplane->seat_columns);
+
+                            if ($this->matrix[$side][$y][$x]['isFree'] === true) {
+                                $reserves[] = &$this->matrix[$side][$y][2 - $x];
+                                --$pending;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            for ($y = 0; $y < $this->airplane->seat_rows && $pending > 0; $y++) {
+                for ($x = 0; $x < $this->airplane->seat_columns && $pending > 0; $x++) {
+                    $side = 0;
+                    $tx = $x;
+
+                    if ($this->matrix[$side][$y][$x]['isFree'] === true || $this->matrix[++$side][$y][($tx = 2 - $x)]['isFree'] === true) {
+                        $reserves[] = &$this->matrix[$side][$y][$tx];
+                        --$pending;
                     }
                 }
             }

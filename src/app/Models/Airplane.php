@@ -43,13 +43,23 @@ class Airplane extends Model
     ];
 
     /**
-     * Returns the number of sits by airplane side.
+     * Returns the seat rows.
      *
      * @return float|int
      */
     public function getSeatRowsAttribute()
     {
         return intval($this->sits_number / $this->seat_columns);
+    }
+
+    /**
+     * Returns the number of sits by airplane side.
+     *
+     * @return float|int
+     */
+    public function getSeatsBySideAttribute()
+    {
+        return intval($this->sits_number / 2);
     }
 
     /**

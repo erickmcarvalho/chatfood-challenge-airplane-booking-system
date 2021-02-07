@@ -12,6 +12,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Str;
 use Tests\TestCase;
+use ReflectionClass;
+use ReflectionProperty;
 
 class BookingServiceTest extends TestCase
 {
@@ -20,14 +22,29 @@ class BookingServiceTest extends TestCase
 
     private BookingService $bookingService;
 
+    private ReflectionProperty $bookingServiceMatrixReflection;
+
     private Flight $flight;
 
     public function setUp(): void
     {
         parent::setUp();
 
+        // Injection booking service
         $this->bookingService = $this->app->get(BookingService::class);
+
+        // Get private $matrix property to test
+        $reflection = new ReflectionClass($this->bookingService);
+        $this->bookingServiceMatrixReflection = $reflection->getProperty('matrix');
+        $this->bookingServiceMatrixReflection->setAccessible(true);
+
+        // Refresh database
         $this->refresh();
+    }
+
+    private function getMatrix()
+    {
+        return $this->bookingServiceMatrixReflection->getValue($this->bookingService);
     }
 
     private function refresh()
@@ -112,7 +129,7 @@ class BookingServiceTest extends TestCase
         $this->bookingService->load($this->flight->id);
 
         for ($i = 0; $i < $this->bookingService->getAirplaneSits()->count(); $i++) {
-            $this->bookingService->reserveSeats(1);
+            $this->assertTrue($this->bookingService->reserveSeats(1));
         }
 
         $this->assertFalse($this->bookingService->reserveSeats(2));
@@ -160,12 +177,8 @@ class BookingServiceTest extends TestCase
         // Test matrix reload
         $this->bookingService->load($this->flight->id);
 
-        // Get private $matrix property to test
-        $reflection = new \ReflectionClass($this->bookingService);
-        $property = $reflection->getProperty('matrix');
-        $property->setAccessible(true);
-
-        $matrix = $property->getValue($this->bookingService);
+        // Test matrix
+        $matrix = $this->getMatrix();
 
         // Test A1,B1,A2,B2 is busy
         $this->assertFalse($matrix[0][0][0]['isFree']); // A1
