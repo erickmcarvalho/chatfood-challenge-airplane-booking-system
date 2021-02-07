@@ -327,4 +327,55 @@ class BookingServiceTest extends TestCase
             [1, 1, 2]  // F2
         ]);
     }
+
+    /**
+     * Challenge example test 3
+     *
+     * Iosu: 2 people;
+     * Gerard: 2 people; Result:
+     * Iosu seats: 'A1', 'B1';
+     * Gerard seats: 'E1', 'F1';
+     */
+    public function test_challenge_example_3()
+    {
+        $this->bookingService->load($this->flight->id);
+
+        // Iosu booking
+        $this->assertTrue($this->bookingService->reserveSeats(2));
+
+        $iosu = $this->bookingService->getBookingSits();
+
+        $matrix = $this->getMatrix();
+        $this->assertFalse($matrix[0][0][0]['isFree']); // A1
+        $this->assertFalse($matrix[0][0][1]['isFree']); // B1
+
+        // Gerard booking
+        $this->bookingService->newBooking();
+        $this->assertTrue($this->bookingService->reserveSeats(2));
+
+        $gerard = $this->bookingService->getBookingSits();
+
+        $matrix = $this->getMatrix();
+        $this->assertFalse($matrix[1][0][1]['isFree']); // E1
+        $this->assertFalse($matrix[1][0][2]['isFree']); // F1
+
+        // Assert contents
+        $this->assertEquals("A1,B1", $iosu->pluck("seat.name")->implode(","));
+        $this->assertEquals("E1,F1", $gerard->pluck("seat.name")->implode(","));
+
+        // Assert matrix
+        $matrix = $this->getMatrix();
+        $this->assertFalse($matrix[0][0][0]['isFree']); // A1
+        $this->assertFalse($matrix[0][0][1]['isFree']); // B1
+        $this->assertFalse($matrix[1][0][1]['isFree']); // E1
+        $this->assertFalse($matrix[1][0][2]['isFree']); // F1
+
+        // Test others are free
+        $this->assertSeatsMatrixFree($matrix, [
+            [0, 0, 0], // A1
+            [0, 0, 1], // B1
+            [1, 0, 1], // E1
+            [1, 0, 2]  // F1
+        ]);
+    }
 }
