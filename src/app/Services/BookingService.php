@@ -24,6 +24,8 @@ class BookingService
 
     private Airplane $airplane;
 
+    private $airplaneSits;
+
     /**
      * @var \Illuminate\Database\Eloquent\Collection|FlightBookingSeat[]
      */
@@ -74,9 +76,9 @@ class BookingService
             'seat_columns'
         ]);
 
-        $airplaneSits = $this->airplaneSitRepository->getFromAirplane($this->flight->airplane_id);
+        $this->airplaneSits = $this->airplaneSitRepository->getFromAirplane($this->flight->airplane_id);
 
-        if ($airplaneSits->count() !== $this->airplane->sits_number) {
+        if ($this->airplaneSits->count() !== $this->airplane->sits_number) {
             throw new LoadBookingException("The airplane not has sits registers.", LoadBookingException::AIRPLANE_IS_INCOMPLETE);
         }
 
@@ -100,14 +102,24 @@ class BookingService
             }
         }
 
-        foreach ($airplaneSits as $airplaneSit) {
+        foreach ($this->airplaneSits as $airplaneSit) {
             $this->matrix[$airplaneSit->seat_side][$airplaneSit->row][$airplaneSit->column]['seat'] = $airplaneSit;
-            $this->matrix[$airplaneSit->seat_side][$airplaneSit->row][$airplaneSit->column]['isFree'] = $this->airplaneBookings->contains(function ($item) use ($airplaneSit) {
+            $this->matrix[$airplaneSit->seat_side][$airplaneSit->row][$airplaneSit->column]['isFree'] = !$this->airplaneBookings->contains(function ($item) use ($airplaneSit) {
                 return $item->airplane_sit_id === $airplaneSit->id;
             });
         }
 
+        $this->booking = null;
+        $this->bookingSits = null;
+        $this->passenger = null;
         $this->loaded = true;
+    }
+
+    public function newBooking(): void
+    {
+        $this->booking = null;
+        $this->bookingSits = null;
+        $this->passenger = null;
     }
 
     public function reserveSeats(int $booking): bool
@@ -213,6 +225,15 @@ class BookingService
                 'airplane_sit_id' => $booking['seat']->id
             ]);
         }
+    }
+
+    public function getAirplaneSits()
+    {
+        if ($this->loaded === false) {
+            throw new BookingServiceErrorException("The service is not loaded.", BookingServiceErrorException::IS_NOT_LOADED);
+        }
+
+        return $this->airplaneSits;
     }
 
     public function getBooking()

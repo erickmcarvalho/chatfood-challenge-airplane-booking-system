@@ -47,7 +47,7 @@ class AirplaneFactory extends Factory
                         'name' => chr(65 + $x).($y + 1),
                         'seat_side' => $side,
                         'row' => $y,
-                        'column' => $x
+                        'column' => $side === 1 ? ($airplane->seat_columns - $x) * -1 : $x,
                     ])->for($airplane)->create();
                 }
             }

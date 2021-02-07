@@ -75,6 +75,14 @@ class BookingServiceTest extends TestCase
         $this->bookingService->save($this->faker->name, $this->faker->email);
     }
 
+    public function test_get_airplane_sits_method_throws_is_not_loaded_exception()
+    {
+        // The service is not loaded.
+        $this->expectException(BookingServiceErrorException::class);
+        $this->expectExceptionCode(BookingServiceErrorException::IS_NOT_LOADED);
+        $this->bookingService->getAirplaneSits();
+    }
+
     public function test_get_bookings_sits_method_throws_not_has_booking_exception()
     {
         $this->bookingService->load($this->flight->id);
@@ -97,5 +105,80 @@ class BookingServiceTest extends TestCase
         $this->expectException(BookingServiceErrorException::class);
         $this->expectExceptionCode(BookingServiceErrorException::NOT_HAS_BOOKING);
         $this->bookingService->getBooking();
+    }
+
+    public function test_there_are_no_seats_available()
+    {
+        $this->bookingService->load($this->flight->id);
+
+        for ($i = 0; $i < $this->bookingService->getAirplaneSits()->count(); $i++) {
+            $this->bookingService->reserveSeats(1);
+        }
+
+        $this->assertFalse($this->bookingService->reserveSeats(2));
+    }
+
+    private function assertSeatsMatrixFree(array $matrix, array $skips)
+    {
+        $skipCollect = collect($skips);
+
+        // Test others are free
+        foreach ($this->bookingService->getAirplaneSits() as $airplaneSit) {
+            // Skip
+            if ($skipCollect->contains(function ($item) use ($airplaneSit) {
+                return $airplaneSit->seat_side === $item[0] && $airplaneSit->row === $item[1] && $airplaneSit->column === $item[2];
+            })) {
+                continue;
+            }
+
+            $this->assertTrue($matrix[$airplaneSit->seat_side][$airplaneSit->row][$airplaneSit->column]['isFree']);
+        }
+    }
+
+    public function test_booking_save_success()
+    {
+        $this->bookingService->load($this->flight->id);
+
+        // Test matrix reserve
+        $this->assertTrue($this->bookingService->reserveSeats(4));
+        $this->assertEquals("A1,B1,A2,B2", $this->bookingService->getBookingSits()->pluck("seat.name")->implode(","));
+
+        // Test save data
+        $this->bookingService->save($this->faker->name, $this->faker->email);
+
+        $this->assertDatabaseHas("passengers", [
+            'id' => $this->bookingService->getPassenger()->id
+        ]);
+        $this->assertDatabaseHas("flight_bookings", [
+            'id' => $this->bookingService->getBooking()->id,
+            'flight_id' => $this->flight->id
+        ]);
+        $this->assertDatabaseHas("flight_booking_seats", [
+            'flight_booking_id' => $this->bookingService->getBooking()->id
+        ]);
+
+        // Test matrix reload
+        $this->bookingService->load($this->flight->id);
+
+        // Get private $matrix property to test
+        $reflection = new \ReflectionClass($this->bookingService);
+        $property = $reflection->getProperty('matrix');
+        $property->setAccessible(true);
+
+        $matrix = $property->getValue($this->bookingService);
+
+        // Test A1,B1,A2,B2 is busy
+        $this->assertFalse($matrix[0][0][0]['isFree']); // A1
+        $this->assertFalse($matrix[0][0][1]['isFree']); // B1
+        $this->assertFalse($matrix[0][1][0]['isFree']); // A2
+        $this->assertFalse($matrix[0][1][1]['isFree']); // B2
+
+        // Test others are free
+        $this->assertSeatsMatrixFree($matrix, [
+            [0, 0, 0], // A1
+            [0, 0, 1], // B1
+            [0, 1, 0], // A2
+            [0, 1, 1]  // B2
+        ]);
     }
 }
