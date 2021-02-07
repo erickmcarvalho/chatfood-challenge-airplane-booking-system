@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Kernel\Database\Models\Model;
 
-class Passenger extends Model
+class FlightBookingSeat extends Model
 {
     use HasFactory;
 
@@ -14,8 +14,17 @@ class Passenger extends Model
      */
     public const COLUMN_MAPPING = [
         'id',
-        'name',
-        'email'
+        'flight_booking_id',
+        'airplane_sit_id'
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'airplane_sit_id' => 'integer'
     ];
 
     /**
@@ -24,7 +33,7 @@ class Passenger extends Model
      * @var string[]
      */
     protected $fillable = [
-        'name',
-        'email'
+        'flight_booking_id',
+        'airplane_sit_id'
     ];
 }
