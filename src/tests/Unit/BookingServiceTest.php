@@ -194,4 +194,61 @@ class BookingServiceTest extends TestCase
             [0, 1, 1]  // B2
         ]);
     }
+
+    /**
+     * Challenge example test 1
+     *
+     * Marco: 4 people;
+     * Gerard: 2 people; Result:
+     * Marco seats: 'A1', 'B1', 'A2', 'B2';
+     * Gerard seats: 'E1', 'F1';
+     */
+    public function test_challenge_example_1()
+    {
+        $this->bookingService->load($this->flight->id);
+
+        // Marco booking
+        $this->assertTrue($this->bookingService->reserveSeats(4));
+
+        $marco = $this->bookingService->getBookingSits();
+
+        $matrix = $this->getMatrix();
+        $this->assertFalse($matrix[0][0][0]['isFree']); // A1
+        $this->assertFalse($matrix[0][0][1]['isFree']); // B1
+        $this->assertFalse($matrix[0][1][0]['isFree']); // A2
+        $this->assertFalse($matrix[0][1][1]['isFree']); // B2
+
+        // Gerard booking
+        $this->bookingService->newBooking();
+        $this->assertTrue($this->bookingService->reserveSeats(2));
+
+        $gerard = $this->bookingService->getBookingSits();
+
+        $matrix = $this->getMatrix();
+        $this->assertFalse($matrix[1][0][1]['isFree']); // E1
+        $this->assertFalse($matrix[1][0][2]['isFree']); // F1
+
+        // Assert contents
+        $this->assertEquals("A1,B1,A2,B2", $marco->pluck("seat.name")->implode(","));
+        $this->assertEquals("E1,F1", $gerard->pluck("seat.name")->implode(","));
+
+        // Assert matrix
+        $matrix = $this->getMatrix();
+        $this->assertFalse($matrix[0][0][0]['isFree']); // A1
+        $this->assertFalse($matrix[0][0][1]['isFree']); // B1
+        $this->assertFalse($matrix[0][1][0]['isFree']); // A2
+        $this->assertFalse($matrix[0][1][1]['isFree']); // B2
+        $this->assertFalse($matrix[1][0][1]['isFree']); // E1
+        $this->assertFalse($matrix[1][0][2]['isFree']); // F1
+
+        // Test others are free
+        $this->assertSeatsMatrixFree($matrix, [
+            [0, 0, 0], // A1
+            [0, 0, 1], // B1
+            [0, 1, 0], // A2
+            [0, 1, 1], // B2
+            [1, 0, 1], // E1
+            [1, 0, 2]  // F1
+        ]);
+    }
 }
