@@ -12,7 +12,7 @@ trait UseUuidPrimaryKey
     protected static function bootUseUuidPrimaryKey()
     {
         static::creating(function ($model) {
-            if (empty($model->{$model->getKeyName()} )) {
+            if (empty($model->{$model->getKeyName()})) {
                 $model->{$model->getKeyName()} = Str::uuid();
             }
         });

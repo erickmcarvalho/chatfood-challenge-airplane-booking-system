@@ -19,6 +19,17 @@ class FlightRepository
     }
 
     /**
+     * Gets all registered flights by pagination.
+     *
+     * @param array|string[] $attributes
+     * @return Flight[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function all(int $perPage, array $attributes = Flight::COLUMN_MAPPING)
+    {
+        return $this->flightModel->simplePaginate($perPage, $attributes);
+    }
+
+    /**
      * Find a flight by ID.
      *
      * @param string         $flightId

@@ -29,6 +29,7 @@ class FlightFactory extends Factory
             'name' => "Flight from ".$source->city." (".$source->country.") to ".$destination->city." (".$destination->country.")",
             'source' => $source->city."/".$source->currencyCode,
             'destination' => $destination->city."/".$destination->countryCode,
+            'flight_date' => $this->faker->dateTimeThisCentury("+10 days"),
             'airplane_id' => Airplane::factory()
         ];
     }

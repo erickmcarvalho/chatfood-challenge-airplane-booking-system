@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\System\AirplaneController;
 use App\Http\Controllers\System\AirplaneSitController;
+use App\Http\Controllers\System\FlightController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,3 +18,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResource('airplanes', AirplaneController::class);
 Route::apiResource('airplanes.sits', AirplaneSitController::class)->only(['index', 'show']);
+Route::apiResource('flights', FlightController::class);
