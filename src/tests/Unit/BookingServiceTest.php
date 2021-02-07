@@ -211,6 +211,7 @@ class BookingServiceTest extends TestCase
         $this->assertTrue($this->bookingService->reserveSeats(4));
 
         $marco = $this->bookingService->getBookingSits();
+        $this->bookingService->save("Marco", "marco@".$this->faker->freeEmailDomain);
 
         $matrix = $this->getMatrix();
         $this->assertFalse($matrix[0][0][0]['isFree']); // A1
@@ -223,6 +224,7 @@ class BookingServiceTest extends TestCase
         $this->assertTrue($this->bookingService->reserveSeats(2));
 
         $gerard = $this->bookingService->getBookingSits();
+        $this->bookingService->save("Gerard", "gerard@".$this->faker->freeEmailDomain);
 
         $matrix = $this->getMatrix();
         $this->assertFalse($matrix[1][0][1]['isFree']); // E1
@@ -270,6 +272,7 @@ class BookingServiceTest extends TestCase
         $this->assertTrue($this->bookingService->reserveSeats(2));
 
         $iosu = $this->bookingService->getBookingSits();
+        $this->bookingService->save("Iosu", "iosu@".$this->faker->freeEmailDomain);
 
         $matrix = $this->getMatrix();
         $this->assertFalse($matrix[0][0][0]['isFree']); // A1
@@ -280,6 +283,7 @@ class BookingServiceTest extends TestCase
         $this->assertTrue($this->bookingService->reserveSeats(5));
 
         $oirol = $this->bookingService->getBookingSits();
+        $this->bookingService->save("Oirol", "irol@".$this->faker->freeEmailDomain);
 
         $matrix = $this->getMatrix();
         $this->assertFalse($matrix[1][0][0]['isFree']); // D1
@@ -292,6 +296,7 @@ class BookingServiceTest extends TestCase
         $this->assertTrue($this->bookingService->reserveSeats(2));
 
         $david = $this->bookingService->getBookingSits();
+        $this->bookingService->save("David", "david@".$this->faker->freeEmailDomain);
 
         $matrix = $this->getMatrix();
         $this->assertFalse($matrix[0][1][0]['isFree']); // A2
@@ -344,6 +349,7 @@ class BookingServiceTest extends TestCase
         $this->assertTrue($this->bookingService->reserveSeats(2));
 
         $iosu = $this->bookingService->getBookingSits();
+        $this->bookingService->save("Iosu", "iosu@".$this->faker->freeEmailDomain);
 
         $matrix = $this->getMatrix();
         $this->assertFalse($matrix[0][0][0]['isFree']); // A1
@@ -354,6 +360,7 @@ class BookingServiceTest extends TestCase
         $this->assertTrue($this->bookingService->reserveSeats(2));
 
         $gerard = $this->bookingService->getBookingSits();
+        $this->bookingService->save("Gerard", "gerard@".$this->faker->freeEmailDomain);
 
         $matrix = $this->getMatrix();
         $this->assertFalse($matrix[1][0][1]['isFree']); // E1
