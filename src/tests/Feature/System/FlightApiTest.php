@@ -94,6 +94,7 @@ class FlightApiTest extends TestCase
 
     public function test_create_flight_success()
     {
+        // Mock
         $data = $this->mockFlight();
 
         // Test
@@ -105,5 +106,20 @@ class FlightApiTest extends TestCase
         $this->assertDatabaseHas("flights", [
             "id" => $response['id']
         ]);
+    }
+
+    public function test_get_specific_flight()
+    {
+        // Mock
+        $flight = Flight::factory()->create();
+
+        // Response
+        $resource = new FlightResource($flight);
+        $resource->withAirplaneId();
+        $expected = $resource->response()->getData(true);
+
+        // Test
+        $response = $this->getJson(route("system.flights.show", [$flight->id]));
+        $response->assertJson($expected);
     }
 }

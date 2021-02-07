@@ -59,12 +59,24 @@ class FlightController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $flightId
+     * @return \Illuminate\Http\Response|mixed
      */
-    public function show($id)
+    public function show(string $flightId)
     {
-        //
+        $flight = $this->flightRepository->find($flightId);
+
+        if ($flight === null) {
+            return $this->notFound([
+                "code" => "notFound",
+                "message" => "Flight is not found."
+            ]);
+        }
+
+        $resource = new FlightResource($flight);
+        $resource->withAirplaneId();
+
+        return $resource;
     }
 
     /**
