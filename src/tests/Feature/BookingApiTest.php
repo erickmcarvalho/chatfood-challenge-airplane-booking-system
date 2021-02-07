@@ -33,6 +33,7 @@ class BookingApiTest extends TestCase
     private function mockPayload(array $replaces = [], array $removes = [])
     {
         return $this->makeMockData([
+            'flightId' => $this->flight->id,
             'name' => $this->faker->name,
             'email' => $this->faker->email,
             'booking' => mt_rand(1, 7)
@@ -53,13 +54,15 @@ class BookingApiTest extends TestCase
     {
         // Missing fields
         $response = $this->postJson(route("bookings.store"), []);
-        $response->assertJsonValidationErrors(['name', 'email', 'booking']);
+        $response->assertJsonValidationErrors(['flightId', 'name', 'email', 'booking']);
 
         // Invalid format
         $response = $this->postJson(route("bookings.store"), $this->mockPayload([
-            'email' => Str::random()
+            'flightId' => Str::random(),
+            'email' => Str::random(),
+            'booking' => Str::random()
         ]));
-        $response->assertJsonValidationErrors(['email']);
+        $response->assertJsonValidationErrors(['flightId', 'email', 'booking']);
 
         // Invalid range min
         $response = $this->postJson(route("bookings.store"), $this->mockPayload([
@@ -80,12 +83,15 @@ class BookingApiTest extends TestCase
         $bookingService = $this->app->get(BookingService::class);
         $bookingService->load($this->flight->id);
 
-        $this->assertTrue($bookingService->reserveSeats($bookingService->getAirplaneSits()->count()));
-
-        $bookingService->save();
+        for ($i = 0; $i < $bookingService->getAirplaneSits()->count(); $i++) {
+            $bookingService->newBooking();
+            $this->assertTrue($bookingService->reserveSeats(1));
+            $bookingService->save($this->faker->name, $this->faker->email);
+        }
 
         // Test
         $response = $this->postJson(route("bookings.store"), $this->mockPayload());
+        //$response->dump();
         $response->assertStatus(Response::HTTP_BAD_REQUEST);
         $response->assertJson([
             'code' => "unavailableSeats"
@@ -114,6 +120,7 @@ class BookingApiTest extends TestCase
     {
         // Marco
         $response = $this->postJson(route("bookings.store"), [
+            'flightId' => $this->flight->id,
             'name' => "Marco",
             'email' => "marco@".$this->faker->freeEmailDomain,
             'booking' => 4
@@ -123,6 +130,7 @@ class BookingApiTest extends TestCase
 
         // Gerard
         $response = $this->postJson(route("bookings.store"), [
+            'flightId' => $this->flight->id,
             'name' => "Gerard",
             'email' => "gerard@".$this->faker->freeEmailDomain,
             'booking' => 2
@@ -145,6 +153,7 @@ class BookingApiTest extends TestCase
     {
         // Marco
         $response = $this->postJson(route("bookings.store"), [
+            'flightId' => $this->flight->id,
             'name' => "Iosu",
             'email' => "iosu@".$this->faker->freeEmailDomain,
             'booking' => 2
@@ -154,6 +163,7 @@ class BookingApiTest extends TestCase
 
         // Oriol
         $response = $this->postJson(route("bookings.store"), [
+            'flightId' => $this->flight->id,
             'name' => "Oriol",
             'email' => "oriol@".$this->faker->freeEmailDomain,
             'booking' => 5
@@ -163,6 +173,7 @@ class BookingApiTest extends TestCase
 
         // David
         $response = $this->postJson(route("bookings.store"), [
+            'flightId' => $this->flight->id,
             'name' => "David",
             'email' => "david@".$this->faker->freeEmailDomain,
             'booking' => 2
@@ -183,6 +194,7 @@ class BookingApiTest extends TestCase
     {
         // Iosu
         $response = $this->postJson(route("bookings.store"), [
+            'flightId' => $this->flight->id,
             'name' => "Iosu",
             'email' => "iosu@".$this->faker->freeEmailDomain,
             'booking' => 2
@@ -192,6 +204,7 @@ class BookingApiTest extends TestCase
 
         // Gerard
         $response = $this->postJson(route("bookings.store"), [
+            'flightId' => $this->flight->id,
             'name' => "Gerard",
             'email' => "gerard@".$this->faker->freeEmailDomain,
             'booking' => 2

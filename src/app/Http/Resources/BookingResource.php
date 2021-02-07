@@ -16,7 +16,8 @@ class BookingResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'passenger' => $this['name'],
+            'id' => $this->when($this->offsetExists('id'), data_get($this, 'id')),
+            'passenger' => $this['passenger'],
             'flight' => (new FlightResource($this['flight']))->withAirplaneInfo(),
             'booking' => $this['booking'],
             'seats' => $this->when($this['seats'] instanceof Collection, new BookingSeatCollection($this['seats']), $this['seats'])

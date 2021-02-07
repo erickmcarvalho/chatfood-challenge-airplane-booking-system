@@ -101,10 +101,10 @@ class FlightApiTest extends TestCase
         $response = $this->postJson(route("system.flights.store"), $data);
         //$response->dump();
         $response->assertCreated();
-        $response->assertJson($data);
+        $response->assertJson(['data' => $data]);
 
         $this->assertDatabaseHas("flights", [
-            "id" => $response['id']
+            "id" => $response['data']['id']
         ]);
     }
 

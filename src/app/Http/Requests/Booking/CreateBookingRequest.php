@@ -24,9 +24,10 @@ class CreateBookingRequest extends FormRequest
     public function rules()
     {
         return [
+            'flightId' => ['required', 'uuid'],
             'name' => ['required'],
             'email' => ['required', 'email'],
-            'booking' => ['required', 'min:1', 'max:7']
+            'booking' => ['required', 'integer', 'min:1', 'max:7']
         ];
     }
 }

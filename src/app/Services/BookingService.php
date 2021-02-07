@@ -313,6 +313,21 @@ class BookingService
     }
 
     /**
+     * Gets the flight.
+     *
+     * @return Flight
+     * @throws BookingServiceErrorException
+     */
+    public function getFlight(): Flight
+    {
+        if ($this->loaded === false) {
+            throw new BookingServiceErrorException("The service is not loaded.", BookingServiceErrorException::IS_NOT_LOADED);
+        }
+
+        return $this->flight;
+    }
+
+    /**
      * Gets the all airplane sits.
      *
      * @return AirplaneSit[]|\Illuminate\Database\Eloquent\Collection
