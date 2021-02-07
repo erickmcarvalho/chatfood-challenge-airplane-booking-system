@@ -5,8 +5,6 @@ namespace Tests\Feature\System;
 use App\Http\Resources\AirplaneResource;
 use App\Http\Resources\AirplaneSitResource;
 use App\Models\Airplane;
-use App\Models\AirplaneSit;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Str;
