@@ -122,4 +122,39 @@ class FlightApiTest extends TestCase
         $response = $this->getJson(route("system.flights.show", [$flight->id]));
         $response->assertJson($expected);
     }
+
+    public function test_update_specific_flight()
+    {
+        // Mock
+        $flight = Flight::factory()->create();
+
+        // Data
+        $backupCurrentFlightData = $flight->toArray();
+        $newMockData = $this->mockFlight();
+
+        $flight->name = $newMockData['name'];
+        $flight->source = $newMockData['source'];
+        $flight->destination = $newMockData['destination'];
+        $flight->flight_date = $newMockData['flightDate'];
+
+        $resource = new FlightResource($flight);
+        $resource->withAirplaneId();
+        $expected = $resource->response()->getData(true);
+
+        // Tests
+        $response = $this->putJson(route("system.flights.update", [$flight->id]), [
+            "name" => $newMockData['name'],
+            "source" => $newMockData['source'],
+            "destination" => $newMockData['destination'],
+            "flightDate" => $newMockData['flightDate']
+        ]);
+        $response->dump();
+        $response->assertSuccessful();
+        $response->assertExactJson($expected);
+
+        $this->assertNotEquals($backupCurrentFlightData['name'], $response['data']['name']);
+        $this->assertNotEquals($backupCurrentFlightData['source'], $response['data']['source']);
+        $this->assertNotEquals($backupCurrentFlightData['destination'], $response['data']['destination']);
+        $this->assertNotEquals($backupCurrentFlightData['flight_date'], $response['data']['flightDate']);
+    }
 }

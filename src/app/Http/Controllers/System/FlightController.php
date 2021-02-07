@@ -4,6 +4,7 @@ namespace App\Http\Controllers\System;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\System\Flight\CreateFlightRequest;
+use App\Http\Requests\System\Flight\UpdateFlightRequest;
 use App\Http\Resources\FlightResource;
 use App\Repositories\FlightRepository;
 use Illuminate\Http\Request;
@@ -83,12 +84,29 @@ class FlightController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $flightId
+     * @return \Illuminate\Http\Response|mixed
      */
-    public function update(Request $request, $id)
+    public function update(UpdateFlightRequest $request, string $flightId)
     {
-        //
+        if ($this->flightRepository->checkExists($flightId) === false) {
+            return $this->notFound([
+                "code" => "notFound",
+                "message" => "Flight is not found."
+            ]);
+        }
+
+        $flight = $this->flightRepository->update($flightId, [
+            "name" => $request->input("name"),
+            "source" => $request->input("source"),
+            "destination" => $request->input("destination"),
+            "flight_date" => $request->input("flightDate")
+        ]);
+
+        $resource = new FlightResource($flight);
+        $resource->withAirplaneId();
+
+        return $resource;
     }
 
     /**
