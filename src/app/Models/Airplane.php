@@ -17,7 +17,29 @@ class Airplane extends Model
         'name',
         'company',
         'sits_number',
-        'seat_sides'
+        'seat_columns'
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'sits_number' => 'integer',
+        'seat_columns' => 'integer'
+    ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
+    protected $fillable = [
+        'name',
+        'company',
+        'sits_number',
+        'seat_columns'
     ];
 
     /**
@@ -27,6 +49,6 @@ class Airplane extends Model
      */
     public function getSeatRowsAttribute()
     {
-        return $this->sits_number / $this->seat_columns;
+        return intval($this->sits_number / $this->seat_columns);
     }
 }

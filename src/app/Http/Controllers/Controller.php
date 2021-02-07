@@ -10,4 +10,26 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    /**
+     * Makes a created response.
+     *
+     * @param mixed $response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function created(mixed $response)
+    {
+        return response($response, 201);
+    }
+
+    /**
+     * Makes a not found response.
+     *
+     * @param mixed $response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    protected function notFound(mixed $response)
+    {
+        return response($response, 404);
+    }
 }

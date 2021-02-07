@@ -3,7 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Airplane;
+use App\Models\AirplaneSit;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Arr;
 
 class AirplaneFactory extends Factory
 {
@@ -22,10 +24,33 @@ class AirplaneFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->titleMale,
+            'name' => $this->faker->firstNameFemale,
             'company' => $this->faker->company,
-            'sits_number' => array_rand([60, 100, 156]),
-            'seat_sides' => array_rand([2, 3])
+            'sits_number' => Arr::random([60, 120, 156]),
+            'seat_columns' => 3
         ];
+    }
+
+    /**
+     * Define the creating sits event.
+     *
+     * @return AirplaneFactory
+     */
+    public function createSits()
+    {
+        return $this->afterCreating(function ($airplane) {
+            for ($y = 0; $y < $airplane->seat_rows; $y++) {
+                for ($x = 0; $x < $airplane->seat_columns * 2; $x++) {
+                    $side = $x >= $airplane->seat_columns ? 1 : 0;
+
+                    AirplaneSit::factory([
+                        'name' => chr(65 + $x).($y + 1),
+                        'seat_side' => $side,
+                        'row' => $y,
+                        'column' => $x
+                    ])->for($airplane)->create();
+                }
+            }
+        });
     }
 }

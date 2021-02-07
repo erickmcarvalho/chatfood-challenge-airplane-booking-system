@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\System\AirplaneController;
+use App\Http\Controllers\System\AirplaneSitController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::apiResource('airplanes', AirplaneController::class);
+Route::apiResource('airplanes.sits', AirplaneSitController::class)->only(['index', 'show']);
