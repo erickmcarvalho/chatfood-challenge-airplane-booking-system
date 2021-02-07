@@ -60,7 +60,7 @@ class FlightController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $flightId
+     * @param  string  $flightId
      * @return \Illuminate\Http\Response|mixed
      */
     public function show(string $flightId)
@@ -84,7 +84,7 @@ class FlightController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $flightId
+     * @param  string  $flightId
      * @return \Illuminate\Http\Response|mixed
      */
     public function update(UpdateFlightRequest $request, string $flightId)
@@ -112,11 +112,18 @@ class FlightController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  string  $flightId
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(string $flightId)
     {
-        //
+        if ($this->flightRepository->delete($flightId) === false) {
+            return $this->notFound([
+                "code" => "notFound",
+                "message" => "Flight is not found."
+            ]);
+        }
+
+        return $this->noContent();
     }
 }

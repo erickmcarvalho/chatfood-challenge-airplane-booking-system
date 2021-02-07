@@ -28,7 +28,7 @@ class CreateFlightRequest extends FormRequest
             'source' => ['required', 'max:255'],
             'destination' => ['required', 'max:255'],
             'flightDate' => ['required', 'date_format:Y-m-d\TH:i:sP'],
-            'airplaneId' => ['required', 'exists:airplanes,id']
+            'airplaneId' => ['required', 'integer', 'exists:airplanes,id']
         ];
     }
 }

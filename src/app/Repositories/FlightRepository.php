@@ -81,4 +81,18 @@ class FlightRepository
 
         return $flight;
     }
+
+    /**
+     * Delete an flight from database.
+     *
+     * @param string $flightId
+     * @return bool
+     */
+    public function delete(string $flightId): bool
+    {
+        return $this->flightModel->newQuery()
+            ->where("id", $flightId)
+            ->select(DB::raw(1))
+            ->delete() > 0;
+    }
 }

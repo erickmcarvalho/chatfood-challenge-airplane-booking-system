@@ -80,14 +80,14 @@ class FlightApiTest extends TestCase
         // Invalid format
         $response = $this->postJson(route("system.flights.store"), $this->mockFlight([
             'flightDate' => Str::random(),
-            'airplane_id' => Str::random()
+            'airplaneId' => Str::random()
         ]));
         $response->assertJsonValidationErrors(['flightDate', 'airplaneId']);
 
         // Not found
         $response = $this->postJson(route("system.flights.store"), $this->mockFlight([
             'flightDate' => Str::random(),
-            'airplane_id' => mt_rand(10000, 99999)
+            'airplaneId' => mt_rand(10000, 99999)
         ]));
         $response->assertJsonValidationErrors(['airplaneId']);
     }
@@ -156,5 +156,20 @@ class FlightApiTest extends TestCase
         $this->assertNotEquals($backupCurrentFlightData['source'], $response['data']['source']);
         $this->assertNotEquals($backupCurrentFlightData['destination'], $response['data']['destination']);
         $this->assertNotEquals($backupCurrentFlightData['flight_date'], $response['data']['flightDate']);
+    }
+
+    public function test_delete_specific_flight()
+    {
+        // Mock
+        $flight = Flight::factory()->create();
+        $this->assertNotNull($flight);
+
+        // Tests
+        $response = $this->deleteJson(route("system.flights.destroy", [$flight->id]));
+        $response->assertNoContent();
+
+        $this->assertDatabaseMissing("flights", [
+            "id" => $flight->id
+        ]);
     }
 }
