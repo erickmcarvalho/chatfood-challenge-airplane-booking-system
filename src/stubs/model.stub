@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use Kernel\Database\Models;
+use Kernel\Database\Models\Model;
 
 class {{ class }} extends Model
 {
