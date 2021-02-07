@@ -40,4 +40,15 @@ class FlightRepository
     {
         return $this->flightModel->find($flightId, $attributes);
     }
+
+    /**
+     * Creates a new flight register.
+     *
+     * @param array $data
+     * @return Flight
+     */
+    public function create(array $data): Flight
+    {
+        return $this->flightModel->create($data);
+    }
 }
