@@ -45,6 +45,10 @@ class RouteServiceProvider extends ServiceProvider
                     Route::prefix('system')->as('system.')->group(base_path('routes/system.php'));
                     require base_path('routes/booking.php');
                 });
+
+            Route::middleware('web')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/web.php'));
         });
     }
 
