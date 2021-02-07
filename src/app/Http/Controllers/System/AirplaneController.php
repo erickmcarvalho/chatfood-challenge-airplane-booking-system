@@ -50,22 +50,31 @@ class AirplaneController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $airplaneId
+     * @return \Illuminate\Http\Response|mixed
      */
-    public function show($id)
+    public function show(int $airplaneId)
     {
-        //
+        $airplane = $this->airplaneRepository->find($airplaneId);
+
+        if ($airplane === null) {
+            return $this->notFound([
+                "code" => "notFound",
+                "message" => "Airplane is not found."
+            ]);
+        }
+
+        return new AirplaneResource($airplane);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $airplaneId
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $airplaneId)
     {
         //
     }

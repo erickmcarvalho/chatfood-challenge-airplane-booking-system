@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\System;
 
+use App\Http\Resources\AirplaneResource;
+use App\Http\Resources\AirplaneSitResource;
 use App\Models\Airplane;
+use App\Models\AirplaneSit;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -85,5 +88,38 @@ class AirplaneApiTest extends TestCase
         // Tests
         $response = $this->getJson(route("system.airplanes.index"));
         $response->assertJson($expected);
+    }
+
+    public function test_get_specific_airplane()
+    {
+        // Mock
+        $airplane = Airplane::factory()->create();
+
+        // Test response
+        $resource = new AirplaneResource($airplane);
+        $expected = $resource->response()->getData(true);
+
+        // Tests
+        $response = $this->getJson(route("system.airplanes.show", [$airplane->id]));
+        $response->assertExactJson($expected);
+    }
+
+    public function test_get_airplane_sits()
+    {
+        // Refresh
+        $this->refreshDatabase();
+
+        // Mocks
+        $airplane = Airplane::factory()->createSits()->create();
+        $airplaneSits = $airplane->sits;
+
+        // Test response
+        $expected = AirplaneSitResource::collection($airplaneSits)
+            ->response()
+            ->getData(true);
+
+        // Tests
+        $response = $this->getJson(route("system.airplanes.sits.index", ['airplane' => $airplane->id]));
+        $response->assertExactJson($expected);
     }
 }

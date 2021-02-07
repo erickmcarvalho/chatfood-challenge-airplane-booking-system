@@ -51,4 +51,14 @@ class Airplane extends Model
     {
         return intval($this->sits_number / $this->seat_columns);
     }
+
+    /**
+     * Relationship with airplane sits.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function sits()
+    {
+        return $this->hasMany(AirplaneSit::class);
+    }
 }
