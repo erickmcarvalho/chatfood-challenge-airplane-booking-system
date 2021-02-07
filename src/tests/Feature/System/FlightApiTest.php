@@ -148,7 +148,7 @@ class FlightApiTest extends TestCase
             "destination" => $newMockData['destination'],
             "flightDate" => $newMockData['flightDate']
         ]);
-        $response->dump();
+        //$response->dump();
         $response->assertSuccessful();
         $response->assertExactJson($expected);
 
