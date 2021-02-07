@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Airplane;
+use Illuminate\Support\Facades\DB;
 
 class AirplaneRepository
 {
@@ -42,6 +43,20 @@ class AirplaneRepository
     }
 
     /**
+     * Check if airplane exists.
+     *
+     * @param int $airplaneId
+     * @return bool
+     */
+    public function checkExists(int $airplaneId): bool
+    {
+        return $this->airplaneModel->newQuery()
+            ->where("id", $airplaneId)
+            ->select(DB::raw(1))
+            ->exists();
+    }
+
+    /**
      * Creates a new airplane.
      *
      * @param array $data
@@ -50,5 +65,19 @@ class AirplaneRepository
     public function create(array $data): Airplane
     {
         return $this->airplaneModel->create($data);
+    }
+
+    /**
+     * Updates an airplane.
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function update(int $airplaneId, array $data): Airplane
+    {
+        $airplane = $this->airplaneModel->find($airplaneId, Airplane::COLUMN_MAPPING);
+        $airplane->update($data);
+
+        return $airplane;
     }
 }

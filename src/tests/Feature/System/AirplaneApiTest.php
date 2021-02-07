@@ -104,6 +104,31 @@ class AirplaneApiTest extends TestCase
         $response->assertExactJson($expected);
     }
 
+    public function test_update_specific_airplane()
+    {
+        // Mock
+        $airplane = Airplane::factory()->create();
+
+        // Data
+        $backupCurrentAirplaneData = $airplane->toArray();
+
+        $airplane->name = $this->faker->firstNameFemale;
+        $airplane->company = $this->faker->company;
+
+        $resource = new AirplaneResource($airplane);
+        $expected = $resource->response()->getData(true);
+
+        // Tests
+        $response = $this->putJson(route("system.airplanes.update", [$airplane->id]), [
+            "name" => $airplane->name,
+            "company" => $airplane->company
+        ]);
+        $response->assertExactJson($expected);
+
+        $this->assertNotEquals($backupCurrentAirplaneData['name'], $response['data']['name']);
+        $this->assertNotEquals($backupCurrentAirplaneData['company'], $response['data']['company']);
+    }
+
     public function test_get_airplane_sits()
     {
         // Refresh

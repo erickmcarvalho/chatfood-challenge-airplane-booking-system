@@ -8,6 +8,7 @@ use App\Http\Resources\AirplaneResource;
 use App\Repositories\AirplaneRepository;
 use App\Services\AirplaneService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AirplaneController extends Controller
 {
@@ -72,11 +73,23 @@ class AirplaneController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $airplaneId
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|mixed
      */
-    public function update(Request $request, $airplaneId)
+    public function update(Request $request, int $airplaneId)
     {
-        //
+        if ($this->airplaneRepository->checkExists($airplaneId) === false) {
+            return $this->notFound([
+                "code" => "notFound",
+                "message" => "Airplane is not found."
+            ]);
+        }
+
+        $airplane = $this->airplaneRepository->update($airplaneId, [
+            'name' => $request->input("name"),
+            'company' => $request->input("company")
+        ]);
+
+        return new AirplaneResource($airplane);
     }
 
     /**
