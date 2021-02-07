@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\Services\BookingService\BookingServiceErrorException;
 use App\Exceptions\Services\BookingService\LoadBookingException;
 use App\Models\Airplane;
+use App\Models\AirplaneSit;
 use App\Models\Flight;
 use App\Models\FlightBooking;
 use App\Models\FlightBookingSeat;
@@ -20,30 +21,79 @@ use Illuminate\Support\Collection;
 
 class BookingService
 {
+    /**
+     * The flight resource.
+     *
+     * @var Flight
+     */
     private Flight $flight;
 
+    /**
+     * The airplane resource.
+     *
+     * @var Airplane
+     */
     private Airplane $airplane;
 
+    /**
+     * The airplane sits collection.
+     *
+     * @var \Illuminate\Database\Eloquent\Collection|AirplaneSit[]
+     */
     private $airplaneSits;
 
     /**
+     * The airplane seats that already reserved.
+     *
      * @var \Illuminate\Database\Eloquent\Collection|FlightBookingSeat[]
      */
     private $airplaneBookings;
 
+    /**
+     * The booking resource.
+     *
+     * @var FlightBooking|null
+     */
     private ?FlightBooking $booking = null;
 
     /**
+     * The booking seats collection.
+     *
      * @var array|Collection|null
      */
     private $bookingSits = null;
 
+    /**
+     * The booking passenger resource.
+     *
+     * @var Passenger|null
+     */
     private ?Passenger $passenger = null;
 
+    /**
+     * The seats matrix.
+     *
+     * @var array
+     */
     private array $matrix = [];
 
+    /**
+     * If the service is loaded.
+     *
+     * @var bool
+     */
     private bool $loaded = false;
 
+    /**
+     * Booking Service constructor.
+     *
+     * @param FlightRepository            $flightRepository
+     * @param FlightBookingRepository     $flightBookingRepository
+     * @param FlightBookingSeatRepository $flightBookingSeatRepository
+     * @param AirplaneRepository          $airplaneRepository
+     * @param AirplaneSitRepository       $airplaneSitRepository
+     * @param PassengerRepository         $passengerRepository
+     */
     public function __construct(
         private FlightRepository $flightRepository,
         private FlightBookingRepository $flightBookingRepository,
@@ -115,6 +165,11 @@ class BookingService
         $this->loaded = true;
     }
 
+    /**
+     * Start new booking.
+     *
+     * @returns void
+     */
     public function newBooking(): void
     {
         $this->booking = null;
@@ -122,6 +177,14 @@ class BookingService
         $this->passenger = null;
     }
 
+    /**
+     * Try reserve seats.
+     * If no available seats are found, returns "false".
+     *
+     * @param int $booking
+     * @return bool
+     * @throws BookingServiceErrorException
+     */
     public function reserveSeats(int $booking): bool
     {
         if ($this->loaded === false) {
@@ -216,7 +279,15 @@ class BookingService
         return true;
     }
 
-    public function save(string $passengerName, string $passengerEmail)
+    /**
+     * Save the booking in database.
+     *
+     * @param string $passengerName
+     * @param string $passengerEmail
+     * @returns void
+     * @throws BookingServiceErrorException
+     */
+    public function save(string $passengerName, string $passengerEmail): void
     {
         if ($this->bookingSits === null) {
             throw new BookingServiceErrorException("Not has reserved seats.", BookingServiceErrorException::NOT_HAS_RESERVED_SEATS);
@@ -241,7 +312,13 @@ class BookingService
         }
     }
 
-    public function getAirplaneSits()
+    /**
+     * Gets the all airplane sits.
+     *
+     * @return AirplaneSit[]|\Illuminate\Database\Eloquent\Collection
+     * @throws BookingServiceErrorException
+     */
+    public function getAirplaneSits(): mixed
     {
         if ($this->loaded === false) {
             throw new BookingServiceErrorException("The service is not loaded.", BookingServiceErrorException::IS_NOT_LOADED);
@@ -250,7 +327,13 @@ class BookingService
         return $this->airplaneSits;
     }
 
-    public function getBooking()
+    /**
+     * Gets the booking resource.
+     *
+     * @return FlightBooking
+     * @throws BookingServiceErrorException
+     */
+    public function getBooking(): FlightBooking
     {
         if ($this->booking === null) {
             throw new BookingServiceErrorException("Not has booking registered.", BookingServiceErrorException::NOT_HAS_BOOKING);
@@ -259,6 +342,12 @@ class BookingService
         return $this->booking;
     }
 
+    /**
+     * Gets the booking sits.
+     *
+     * @return array|Collection|null
+     * @throws BookingServiceErrorException
+     */
     public function getBookingSits()
     {
         if ($this->bookingSits === null) {
@@ -268,7 +357,13 @@ class BookingService
         return $this->bookingSits;
     }
 
-    public function getPassenger()
+    /**
+     * Get the passenger resource.
+     *
+     * @return Passenger
+     * @throws BookingServiceErrorException
+     */
+    public function getPassenger(): Passenger
     {
         if ($this->booking === null) {
             throw new BookingServiceErrorException("Not has booking registered.", BookingServiceErrorException::NOT_HAS_BOOKING);
@@ -277,6 +372,14 @@ class BookingService
         return $this->passenger;
     }
 
+    /**
+     * Makes the matrix by booking number.
+     *
+     * @param int $booking
+     * @param int $columns
+     * @param int $rows
+     * @returns void
+     */
     private function makeBookingMatrix(int $booking, int &$columns, int &$rows): void {
         if ($booking % $this->airplane->seat_columns === 0) {
             $columns = $this->airplane->seat_columns;
