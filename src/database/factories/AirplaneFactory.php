@@ -39,7 +39,7 @@ class AirplaneFactory extends Factory
     public function createSits()
     {
         return $this->afterCreating(function ($airplane) {
-            for ($y = 0; $y < $airplane->seat_rows; $y++) {
+            for ($y = 0; $y < $airplane->seat_rows / 2; $y++) {
                 for ($x = 0; $x < $airplane->seat_columns * 2; $x++) {
                     $side = $x >= $airplane->seat_columns ? 1 : 0;
 

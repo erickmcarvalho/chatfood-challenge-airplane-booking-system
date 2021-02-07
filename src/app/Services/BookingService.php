@@ -71,12 +71,12 @@ class BookingService
         $this->flight = $flight;
         $this->airplane = $this->airplaneRepository->find($this->flight->airplane_id, [
             'sits_number',
-            'seat_sides'
+            'seat_columns'
         ]);
 
         $airplaneSits = $this->airplaneSitRepository->getFromAirplane($this->flight->airplane_id);
 
-        if ($airplaneSits->count() !== $this->airplane->seat_rows) {
+        if ($airplaneSits->count() !== $this->airplane->sits_number) {
             throw new LoadBookingException("The airplane not has sits registers.", LoadBookingException::AIRPLANE_IS_INCOMPLETE);
         }
 
