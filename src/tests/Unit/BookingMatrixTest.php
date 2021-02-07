@@ -373,7 +373,7 @@ class BookingMatrixTest extends TestCase
         $this->assertFalse($matrix[1][0][0]['isFree']); // D1
         $this->assertFalse($matrix[1][0][1]['isFree']); // E1
         $this->assertFalse($matrix[1][0][2]['isFree']); // F1
-        $this->assertFalse($matrix[1][1][1]['isFree']); // D2
+        $this->assertFalse($matrix[1][1][1]['isFree']); // E2
         $this->assertFalse($matrix[1][1][2]['isFree']); // F2
 
         $oirol = Arr::pluck($result, "seat");
